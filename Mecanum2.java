@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="Mecanum2", group="Linear Opmode")
-
 public class Mecanum2 extends LinearOpMode {
 
     //Declaring motors    F= Front B= Back R= Right L= Left LMotor= Launch Motor I= Intake
@@ -26,28 +25,16 @@ public class Mecanum2 extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor LMotor  = null;
     private DcMotor IMotor  = null;
-    //Speed modifier
+    //Power Reduction
     private Double  pwrRed  = .9;
-    private double  launch  = 1;
-    private double  intake  = 1;
+    private boolean  launchOn  = false;
+    private boolean  intakeOn  = false;
     
     @Override
-    public void runOpMode() {
-        FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
-        FLDrive  = hardwareMap.get(DcMotor.class, "FLDrive");
-        BRDrive  = hardwareMap.get(DcMotor.class, "BRDrive");
-        BLDrive  = hardwareMap.get(DcMotor.class, "BLDrive");
-        LMotor   = hardwareMap.get(DcMotor.class, "LMotor");
-        IMotor   = hardwareMap.get(DcMotor.class, "IMotor");
+    public void runOpMode() 
+    {
+        motorSetUp();
 
-        FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         
@@ -63,8 +50,8 @@ public class Mecanum2 extends LinearOpMode {
             
             // if the value of the joystick is not zero meaning joystick is not centered.
             // Will take the value of the joystick for the power of the right and left motors.
-            if(gamepad1.right_stick_y != 0 || gamepad1.right_stick_x !=0 || gamepad1.left_stick_x != 0) {
-
+            if(inputDetected()) 
+            {
                 //omni wheel     Left motors are flipped irl so I must flip the rotation
 
                 //any foward movement
@@ -109,44 +96,78 @@ public class Mecanum2 extends LinearOpMode {
             }
             // if the joystick is not moved the motors will not move.
             // if the joystick is centered the motors will no longer move.
-            else {
+            else 
+            {
                 FRDrive.setPower(0);
                 FLDrive.setPower(0);
                 BRDrive.setPower(0);
                 BLDrive.setPower(0);
             }
+
+            launcher();
             
-            // turn on launch motor and the intake motor to launch balls
-            if(gamepad1.right_bumper & launch == 1){
-                LMotor.setPower(-1);
-                IMotor.setPower(1);
-                launch = 0;
-                sleep(300);
-            }
-            // turn off 
-            if(gamepad1.right_bumper & launch == 0){
-                LMotor.setPower(0);
-                IMotor.setPower(0);
-                launch = 1;
-                sleep(300);
-            }
-            
-            // turn on intake motor to intake balls into robot
-            if(gamepad1.left_bumper & intake == 1){
-                IMotor.setPower(1);
-                intake = 0;
-                sleep(300);
-            }
-            //turn off 
-            if(gamepad1.left_bumper & intake == 0){
-                    IMotor.setPower(0);
-                    intake = 1;
-                    sleep(300);
-            }
-             
              //update
             telemetry.addData("Status", "Running ", rightStick_x, rightStick_y);
             telemetry.update();
         }
+    }
+
+    private void motorsSetup()
+    {
+        FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
+        FLDrive  = hardwareMap.get(DcMotor.class, "FLDrive");
+        BRDrive  = hardwareMap.get(DcMotor.class, "BRDrive");
+        BLDrive  = hardwareMap.get(DcMotor.class, "BLDrive");
+        LMotor   = hardwareMap.get(DcMotor.class, "LMotor");
+        IMotor   = hardwareMap.get(DcMotor.class, "IMotor");
+
+        FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+    }
+
+    private void launcher()
+    {
+        private int sleepTimeInMilleseconds = 300;
+        // turn on launch motor and the intake motor to launch balls
+        if(gamepad1.right_bumper & launch == false)
+        {
+            LMotor.setPower(-1);
+            IMotor.setPower(1);
+            launchOn = true;
+            sleep(sleepTimeInMilleseconds);
+        }
+        // turn off 
+        if(gamepad1.right_bumper & launch == true)
+        {
+            LMotor.setPower(0);
+            IMotor.setPower(0);
+            launch = false;
+            sleep(sleepTimeInMilleseconds);
+        }
+        
+        // turn on intake motor to intake balls into robot
+        if(gamepad1.left_bumper & intake == false)
+        {
+            IMotor.setPower(1);
+            intake = true;
+            sleep(sleepTimeInMilleseconds);
+        }
+        //turn off
+        if(gamepad1.left_bumper & intake == true)
+        {
+                IMotor.setPower(0);
+                intake = false;
+                sleep(sleepTimeInMilleseconds);
+        }
+    }
+
+    private boolean inputDetected()
+    {
+        return gamepad1.right_stick_y != 0 || gamepad1.right_stick_x !=0 || gamepad1.left_stick_x != 0;
     }
 }
