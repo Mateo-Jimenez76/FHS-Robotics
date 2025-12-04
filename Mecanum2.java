@@ -134,7 +134,7 @@ public class Mecanum2 extends LinearOpMode {
     {
         private int sleepTimeInMilleseconds = 300;
         // turn on launch motor and the intake motor to launch balls
-        if(gamepad1.right_bumper & launch == false)
+        if(gamepad1.right_bumper & launchOn == false)
         {
             LMotor.setPower(-1);
             IMotor.setPower(1);
@@ -142,7 +142,7 @@ public class Mecanum2 extends LinearOpMode {
             sleep(sleepTimeInMilleseconds);
         }
         // turn off 
-        if(gamepad1.right_bumper & launch == true)
+        if(gamepad1.right_bumper & launchOn == true)
         {
             LMotor.setPower(0);
             IMotor.setPower(0);
@@ -151,14 +151,14 @@ public class Mecanum2 extends LinearOpMode {
         }
         
         // turn on intake motor to intake balls into robot
-        if(gamepad1.left_bumper & intake == false)
+        if(gamepad1.left_bumper & intakeOn == false)
         {
             IMotor.setPower(1);
             intake = true;
             sleep(sleepTimeInMilleseconds);
         }
         //turn off
-        if(gamepad1.left_bumper & intake == true)
+        if(gamepad1.left_bumper & intakeOn == true)
         {
                 IMotor.setPower(0);
                 intake = false;
