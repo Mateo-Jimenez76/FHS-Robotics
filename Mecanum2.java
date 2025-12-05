@@ -98,10 +98,7 @@ public class Mecanum2 extends LinearOpMode {
             // if the joystick is centered the motors will no longer move.
             else 
             {
-                FRDrive.setPower(0);
-                FLDrive.setPower(0);
-                BRDrive.setPower(0);
-                BLDrive.setPower(0);
+                setPowerToWheelMotors(0);
             }
 
             launcher();
