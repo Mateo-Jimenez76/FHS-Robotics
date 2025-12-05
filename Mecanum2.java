@@ -23,10 +23,13 @@ public class Mecanum2 extends LinearOpMode {
     private DcMotor LMotor  = null;
     private DcMotor IMotor  = null;
     //Power Reduction
-    private Double  pwrRed  = .9;
+    private final double   powerReduction  = .9;
     private boolean  launchOn  = false;
     private boolean  intakeOn  = false;
-    
+
+    //amount LMotor accelerates each repeat of the loop till it reaches 1
+    private final double motorAcceleration = .1;
+
     @Override
     public void runOpMode() 
     {
@@ -54,39 +57,39 @@ public class Mecanum2 extends LinearOpMode {
                 //any foward movement
                 if(rightStick_y < 0){
                     // right side
-                    FRDrive.setPower((rightStick_y - rightStick_x)*pwrRed); // values from -1 to 1
-                    BRDrive.setPower((rightStick_y + rightStick_x)*pwrRed); // values from -1 to 1
+                    FRDrive.setPower((rightStick_y - rightStick_x)*powerReduction); // values from -1 to 1
+                    BRDrive.setPower((rightStick_y + rightStick_x)*powerReduction); // values from -1 to 1
 
                     // left side
-                    FLDrive.setPower((-rightStick_y - rightStick_x)*pwrRed); // values from -1 to 1
-                    BLDrive.setPower((-rightStick_y + rightStick_x)*pwrRed); // values from -1 to 1
+                    FLDrive.setPower((-rightStick_y - rightStick_x)*powerReduction); // values from -1 to 1
+                    BLDrive.setPower((-rightStick_y + rightStick_x)*powerReduction); // values from -1 to 1
                 }
 
                 //any backward movement
                 if(rightStick_y > 0){
                     // right side
-                    FRDrive.setPower((rightStick_y - rightStick_x)*pwrRed); // values from -1 to 1
-                    BRDrive.setPower((rightStick_y + rightStick_x)*pwrRed); // values from -1 to 1
+                    FRDrive.setPower((rightStick_y - rightStick_x)*powerReduction); // values from -1 to 1
+                    BRDrive.setPower((rightStick_y + rightStick_x)*powerReduction); // values from -1 to 1
 
                     // left side
-                    FLDrive.setPower((-rightStick_y - rightStick_x)*pwrRed); // values from -1 to 1
-                    BLDrive.setPower((-rightStick_y + rightStick_x)*pwrRed); // values from -1 to 1
+                    FLDrive.setPower((-rightStick_y - rightStick_x)*powerReduction); // values from -1 to 1
+                    BLDrive.setPower((-rightStick_y + rightStick_x)*powerReduction); // values from -1 to 1
                 }
 
                 //I think the FR and BR should be positive, FL and BL should be negative - Max
                 //Side to side movement
                 if(rightStick_y == 0){
-                    FRDrive.setPower((rightStick_x)*pwrRed); // values from -1 to 1
-                    FLDrive.setPower((rightStick_x)*pwrRed); // values from -1 to 1
-                    BRDrive.setPower((-rightStick_x)*pwrRed); // values from -1 to 1
-                    BLDrive.setPower((-rightStick_x)*pwrRed); // values from -1 to 1
+                    FRDrive.setPower((rightStick_x)*powerReduction); // values from -1 to 1
+                    FLDrive.setPower((rightStick_x)*powerReduction); // values from -1 to 1
+                    BRDrive.setPower((-rightStick_x)*powerReduction); // values from -1 to 1
+                    BLDrive.setPower((-rightStick_x)*powerReduction); // values from -1 to 1
                 }
                 //Rotate
                 if(leftStick_x != 0){
-                    FRDrive.setPower((leftStick_x)*pwrRed); // values from -1 to 1
-                    FLDrive.setPower((leftStick_x)*pwrRed); // values from -1 to 1
-                    BRDrive.setPower((leftStick_x)*pwrRed); // values from -1 to 1
-                    BLDrive.setPower((leftStick_x)*pwrRed); // values from -1 to 1
+                    FRDrive.setPower((leftStick_x)*powerReduction); // values from -1 to 1
+                    FLDrive.setPower((leftStick_x)*powerReduction); // values from -1 to 1
+                    BRDrive.setPower((leftStick_x)*powerReduction); // values from -1 to 1
+                    BLDrive.setPower((leftStick_x)*powerReduction); // values from -1 to 1
                 }
                 
                 
@@ -95,7 +98,7 @@ public class Mecanum2 extends LinearOpMode {
             // if the joystick is centered the motors will no longer move.
             else 
             {
-                setPowerToWheelMotors(0);
+                setPowerToAllWheelMotors(0);
             }
 
             launcher();
@@ -106,6 +109,8 @@ public class Mecanum2 extends LinearOpMode {
         }
     }
 
+    //Sets references for all motors and set default zero power bahaviour to Brake.
+    //Sends telemetry data once complete.
     private void motorsSetup()
     {
         FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
@@ -128,15 +133,19 @@ public class Mecanum2 extends LinearOpMode {
     {
         private int sleepTimeInMilleseconds = 300;
         // turn on launch motor and the intake motor to launch balls
-        if(gamepad1.right_bumper & launchOn == false)
+        if(gamepad1.right_bumper && launchOn == false)
         {
-            LMotor.setPower(-1);
-            IMotor.setPower(1);
             launchOn = true;
-            sleep(sleepTimeInMilleseconds);
+            //reapeat until LMotor Power = 1 (10 times) or until LMotor is turned off
+            for(int i = 0; i < 10 && launchOn == true; i++)
+            {  
+                LMotor.setPower(-motorAcceleration * i); 
+                telemetry.addData("Status","LMotor Power: " + LMotor.getPower());
+                sleep(sleepTimeInMilleseconds); //0.3 seconds, 10 times, 3 seconds for loop
+            }
         }
         // turn off 
-        if(gamepad1.right_bumper & launchOn == true)
+        if(gamepad1.right_bumper && launchOn == true)
         {
             LMotor.setPower(0);
             IMotor.setPower(0);
@@ -145,31 +154,61 @@ public class Mecanum2 extends LinearOpMode {
         }
         
         // turn on intake motor to intake balls into robot
-        if(gamepad1.left_bumper & intakeOn == false)
+        if(gamepad1.left_bumper && intakeOn == false)
         {
             IMotor.setPower(1);
             intake = true;
             sleep(sleepTimeInMilleseconds);
         }
         //turn off
-        if(gamepad1.left_bumper & intakeOn == true)
+        if(gamepad1.left_bumper && intakeOn == true)
         {
-                IMotor.setPower(0);
-                intake = false;
-                sleep(sleepTimeInMilleseconds);
+            IMotor.setPower(0);
+            intake = false;
+            sleep(sleepTimeInMilleseconds);
         }
     }
+
 
     private boolean joystickInputDetected()
     {
         return gamepad1.right_stick_y != 0 || gamepad1.right_stick_x !=0 || gamepad1.left_stick_x != 0;
     }
 
+    //double power: The power to set all wheel motors to. (FRDrive,FLDrive,BRDrive,BLDrive)
     private void setPowerToAllWheelMotors(double power)
     {
         FRDrive.setPower(power);
         FLDrive.setPower(power);
         BRDrive.setPower(power);
         BLDrive.setPower(power);
+    }
+
+    //DCMotor motor: The motor to change the power of
+    //double endingPower: The ending power the motor should reach
+    //double acceleration: How fast the motor should reach the endingPower. Power goes up by the acceleration amount every 0.1 seconds.
+    private void SetPowerOverTime(DcMotor motor, double endingPower, double acceleration)
+    {
+        if(endingPower < 0 && acceleration > 0)
+        {
+            acceleration *= -1;
+        }
+
+        if(endingPower > 0 && )
+        {
+            
+        }
+
+
+        for(int i = 0; i < 10 && launchOn == true; i++)
+        {   
+            if(motor.getPower() == endingPower)
+            {
+                return;
+            }
+            motor.setPower(-motorAcceleration * i); 
+            telemetry.addData("Status","motor Power: " + motor.getPower());
+            sleep(100); // 0.1
+        }
     }
 }
