@@ -50,7 +50,7 @@ public class Mecanum2 extends LinearOpMode {
             
             // if the value of the joystick is not zero meaning joystick is not centered.
             // Will take the value of the joystick for the power of the right and left motors.
-            if(inputDetected()) 
+            if(joystickInputDetected())
             {
                 //omni wheel     Left motors are flipped irl so I must flip the rotation
 
@@ -166,8 +166,16 @@ public class Mecanum2 extends LinearOpMode {
         }
     }
 
-    private boolean inputDetected()
+    private boolean joystickInputDetected()
     {
         return gamepad1.right_stick_y != 0 || gamepad1.right_stick_x !=0 || gamepad1.left_stick_x != 0;
+    }
+
+    private void setPowerToAllWheelMotors(double power)
+    {
+        FRDrive.setPower(power);
+        FLDrive.setPower(power);
+        BRDrive.setPower(power);
+        BLDrive.setPower(power);
     }
 }
