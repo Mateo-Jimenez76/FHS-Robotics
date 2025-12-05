@@ -187,38 +187,10 @@ public class Mecanum2 extends LinearOpMode {
     //DCMotor motor: The motor to change the power of
     //double endingPower: The ending power the motor should reach
     //double acceleration: How fast the motor should reach the endingPower. Power goes up by the acceleration amount every 0.1 seconds.
-    private void SetPowerOverTime(DcMotor motor, double endingPower, double acceleration)
-    {
-        if(endingPower < 0 && acceleration > 0)
-        {
-            acceleration *= -1;
-        }
-
-        if(endingPower > 0 && )
-        {
-            
-        }
-
-
-        for(int i = 0; i < 10 && launchOn == true; i++)
-        {   
-            if(motor.getPower() == endingPower)
-            {
-                return;
-            }
-            motor.setPower(-motorAcceleration * i); 
-            telemetry.addData("Status","motor Power: " + motor.getPower());
-            sleep(100); // 0.1
-        }
-    }
-
-    //DCMotor motor: The motor to change the power of
-    //double endingPower: The ending power the motor should reach
-    //double acceleration: How fast the motor should reach the endingPower. Power goes up by the acceleration amount every 0.1 seconds.
     private void setMotorPowerOverTime(DcMotor motor, double endingPower, double acceleration)
     {
         int i = 1;
-        while(motor.getPower() != endingPower)
+        while(motor.getPower() != endingPower && motor.getPower() == 0)
         {
             motor.setPower(acceleration * i);
             telemetry.addData("Status","Motor (" + motor.getPortNumber() + ") Power: " + motor.getPower());
