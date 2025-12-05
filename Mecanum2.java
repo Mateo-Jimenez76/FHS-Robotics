@@ -33,16 +33,20 @@ public class Mecanum2 extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        
+
+        //Initiliazing variables outside of while() to improve memory performance.
+        double rightStick_y = 0;
+        double rightStick_x = 0;
+        double leftStick_x = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // gets the value of y for the power forwards and backwards
-            double rightStick_y = gamepad1.right_stick_y; 
+            rightStick_y = gamepad1.right_stick_y; 
             // gets the value of x for the power left and right
-            double rightStick_x = gamepad1.right_stick_x; 
+            rightStick_x = gamepad1.right_stick_x; 
             
             // gets the power to turn
-            double leftStick_x = gamepad1.left_stick_x;
+            leftStick_x = gamepad1.left_stick_x;
             
             // if the value of the joystick is not zero meaning joystick is not centered.
             // Will take the value of the joystick for the power of the right and left motors.
