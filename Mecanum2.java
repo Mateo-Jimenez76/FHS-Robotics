@@ -22,13 +22,9 @@ public class Mecanum2 extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor LMotor  = null;
     private DcMotor IMotor  = null;
-    //Power Reduction
-    private final double   powerReduction  = .9;
-    private boolean  launchOn  = false;
-    private boolean  intakeOn  = false;
-
-    //amount LMotor accelerates each repeat of the loop till it reaches 1
-    private final double motorAcceleration = .1;
+    private final double powerReduction  = .9;
+    private boolean launchOn  = false;
+    private boolean intakeOn  = false;
 
     @Override
     public void runOpMode() 
@@ -109,7 +105,7 @@ public class Mecanum2 extends LinearOpMode {
         }
     }
 
-    //Sets references for all motors and set default zero power bahaviour to Brake.
+    //Sets references for all motors and set default zero power bahaviour to Brake(for driving wheels).
     //Sends telemetry data once complete.
     private void motorsSetup()
     {
@@ -136,13 +132,7 @@ public class Mecanum2 extends LinearOpMode {
         if(gamepad1.right_bumper && launchOn == false)
         {
             launchOn = true;
-            //reapeat until LMotor Power = 1 (10 times) or until LMotor is turned off
-            for(int i = 0; i < 10 && launchOn == true; i++)
-            {  
-                LMotor.setPower(-motorAcceleration * i); 
-                telemetry.addData("Status","LMotor Power: " + LMotor.getPower());
-                sleep(sleepTimeInMilleseconds); //0.3 seconds, 10 times, 3 seconds for loop
-            }
+            setMotorPowerOverTime(LMotor,1,0.1);
         }
         // turn off 
         if(gamepad1.right_bumper && launchOn == true)
@@ -169,7 +159,7 @@ public class Mecanum2 extends LinearOpMode {
         }
     }
 
-
+    //returns true or false depending on whether joystick input has been detected.
     private boolean joystickInputDetected()
     {
         return gamepad1.right_stick_y != 0 || gamepad1.right_stick_x !=0 || gamepad1.left_stick_x != 0;
