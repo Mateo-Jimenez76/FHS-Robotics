@@ -25,11 +25,18 @@ public class Mecanum2 extends LinearOpMode {
     private final double powerReduction  = .9;
     private boolean launchOn  = false;
     private boolean intakeOn  = false;
-
+    
     @Override
     public void runOpMode() 
     {
+        //https://ftctechnh.github.io/ftc_app/doc/javadoc/org/firstinspires/ftc/robotcore/external/Telemetry.html
+        telemetry.setAutoClear(false);
+
+        Telemetry.Item Status = telemetry.addData("Status","Setting up...")
+        telemetry.
         motorSetUp();
+        Telemetry.Item FRDriveItem = telemetry.addData("FRDriveItem",motorToString(FRDrive));
+        
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -178,8 +185,8 @@ public class Mecanum2 extends LinearOpMode {
         BLDrive.setPower(power);
     }
 
-    //DCMotor motor: The motor to change the power of
-    //double endingPower: The ending power the motor should reach
+    //DCMotor motor: The motor to change the power of.
+    //double endingPower: The ending power the motor should reach.
     //double acceleration: How fast the motor should reach the endingPower. Power goes up by the acceleration amount every 0.1 seconds.
     private void setMotorPowerOverTime(DcMotor motor, double endingPower, double acceleration)
     {
@@ -187,10 +194,18 @@ public class Mecanum2 extends LinearOpMode {
         while(motor.getPower() != endingPower && motor.getPower() == 0)
         {
             motor.setPower(acceleration * i);
-            telemetry.addData("Status","Motor (" + motor.getPortNumber() + ") Power: " + motor.getPower());
+            telemetry.addData("Status",motorToString(motor));
             telemetry.update();
             sleep(100); // 0.1
             i++;
         }
+    }
+
+    //DCMotor motor: The motor to grab info from.
+    //Returns a formatted string containing the motor port, and current power
+    //Example: DCMotor Port:0 Power:0.5
+    private string motorToString(DcMotor motor)
+    {
+        return "DCMotor Port:" + motor.getPortNumber() + " Power:" + motor.getPower();
     }
 }
