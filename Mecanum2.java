@@ -32,11 +32,17 @@ public class Mecanum2 extends LinearOpMode {
         //https://ftctechnh.github.io/ftc_app/doc/javadoc/org/firstinspires/ftc/robotcore/external/Telemetry.html
         telemetry.setAutoClear(false);
 
-        Telemetry.Item Status = telemetry.addData("Status","Setting up...")
-        telemetry.
+        Telemetry.Item statusItem = telemetry.addData("Status","Setting up...")
+        telemetry.update();
         motorSetUp();
-        Telemetry.Item FRDriveItem = telemetry.addData("FRDriveItem",motorToString(FRDrive));
         
+        Telemetry.Item FRDriveItem = telemetry.addData("FRDriveItem",motorToString(FRDrive));
+        Telemetry.Item FLDriveItem = telemetry.addData("FLDriveItem",motorToString(FLDrive));
+        Telemetry.Item BRDriveItem = telemetry.addData("BRDriveItem",motorToString(BRDrive));
+        Telemetry.Item BLDriveItem = telemetry.addData("BLDriveItem",motorToString(BLDrive));
+        Telemetry.Item LMotorItem = telemetry.addData("LMotorItem",motorToString(LMotor));
+        Telemetry.Item IMotorItem = telemetry.addData("IMotorItem",motorToString(IMotor));
+        telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -111,7 +117,8 @@ public class Mecanum2 extends LinearOpMode {
             launcher();
             
              //update
-            telemetry.addData("Status", "Running ", rightStick_x, rightStick_y);
+            statusItem.setValue(rightStick_x, rightStick_y);
+            updateMotorTelemetryData();
             telemetry.update();
         }
     }
@@ -207,5 +214,16 @@ public class Mecanum2 extends LinearOpMode {
     private string motorToString(DcMotor motor)
     {
         return "DCMotor Port:" + motor.getPortNumber() + " Power:" + motor.getPower();
+    }
+
+    //Sends power level data to screen of all motors
+    private void updateMotorTelemetryData()
+    {
+        FRDriveItem.setValue(motorToString(FRDrive));
+        FLDriveItem.setValue(motorToString(FLDrive));
+        BRDriveItem.setValue(motorToString(BRDrive));
+        BLDriveItem.setValue(motorToString(BLDrive));
+        LMotorItem.setValue(motorToString(LMotor));
+        IMotorItem.setValue(motorToString(IMotor));
     }
 }
