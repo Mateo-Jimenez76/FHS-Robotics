@@ -119,7 +119,6 @@ public class Mecanum2 extends LinearOpMode {
              //update
             statusItem.setValue(rightStick_x, rightStick_y);
             updateMotorTelemetryData();
-            telemetry.update();
         }
     }
 
@@ -201,8 +200,6 @@ public class Mecanum2 extends LinearOpMode {
         while(motor.getPower() != endingPower && motor.getPower() == 0)
         {
             motor.setPower(acceleration * i);
-            telemetry.addData("Status",motorToString(motor));
-            telemetry.update();
             sleep(100); // 0.1
             i++;
         }
@@ -225,5 +222,6 @@ public class Mecanum2 extends LinearOpMode {
         BLDriveItem.setValue(motorToString(BLDrive));
         LMotorItem.setValue(motorToString(LMotor));
         IMotorItem.setValue(motorToString(IMotor));
+        telemetry.update();
     }
 }
